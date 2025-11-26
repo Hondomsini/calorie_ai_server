@@ -9,8 +9,20 @@ const app = express();
 app.use(cors());
 const upload = multer({ dest: "uploads/" });
 
+// -------------------------
+//  GOOGLE AI INIT
+// -------------------------
+if (!process.env.GEMINI_API_KEY) {
+  console.error("❌ ERROR: GEMINI_API_KEY NO DEFINIDA EN .env");
+  process.exit(1);
+}
+
+console.log("✅ GEMINI_API_KEY detectada correctamente.");
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+});
 
 // -------------------------
 //    ROUTE: /analyze
@@ -49,19 +61,22 @@ app.post("/analyze", upload.single("file"), async (req, res) => {
 
     const output = result.response.text();
 
-    // Delete temp file
-    fs.unlinkSync(req.file.path);
+    fs.unlinkSync(req.file.path); // borrar archivo temporal
 
     return res.json(JSON.parse(output));
   } catch (err) {
     console.error("SERVER ERROR:", err);
-    return res.status(500).json({ error: "Error processing image", details: err.message });
+    return res
+      .status(500)
+      .json({ error: "Error processing image", details: err.message });
   }
 });
 
 // -------------------------
 //       START SERVER
 // -------------------------
-app.listen(3000, () => {
-  console.log("🚀 Server running on http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on PORT ${PORT}`);
 });
