@@ -21,7 +21,7 @@ console.log("✅ GEMINI_API_KEY detectada correctamente.");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
+  model: "gemini-1.5-flash-latest",
 });
 
 // -------------------------
@@ -80,3 +80,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on PORT ${PORT}`);
 });
+
