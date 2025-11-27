@@ -21,7 +21,7 @@ console.log("✅ GEMINI_API_KEY detectada correctamente.");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
+  model: "gemini-1.5-flash-latest",
 });
 
 // -------------------------
@@ -61,7 +61,7 @@ app.post("/analyze", upload.single("file"), async (req, res) => {
 
     const output = result.response.text();
 
-    fs.unlinkSync(req.file.path); // borrar archivo temporal
+    fs.unlinkSync(req.file.path);
 
     return res.json(JSON.parse(output));
   } catch (err) {
