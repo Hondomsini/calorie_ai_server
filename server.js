@@ -1,3 +1,4 @@
+// force redeploy
 require("dotenv").config();
 const express = require("express");
 const multer = require("multer");
@@ -20,8 +21,10 @@ if (!process.env.GEMINI_API_KEY) {
 console.log("✅ GEMINI_API_KEY detectada correctamente.");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+// ⚠️ Modelo correcto para versión 0.24.1 del SDK
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash-latest",
+  model: "gemini-1.5-flash",
 });
 
 // -------------------------
@@ -29,7 +32,9 @@ const model = genAI.getGenerativeModel({
 // -------------------------
 app.post("/analyze", upload.single("file"), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
 
     const imageBytes = fs.readFileSync(req.file.path);
 
@@ -59,16 +64,17 @@ app.post("/analyze", upload.single("file"), async (req, res) => {
       { text: prompt },
     ]);
 
-    const output = result.response.text();
+    const outputText = result.response.text();
 
     fs.unlinkSync(req.file.path);
 
-    return res.json(JSON.parse(output));
+    return res.json(JSON.parse(outputText));
   } catch (err) {
     console.error("SERVER ERROR:", err);
-    return res
-      .status(500)
-      .json({ error: "Error processing image", details: err.message });
+    return res.status(500).json({
+      error: "Error processing image",
+      details: err.message,
+    });
   }
 });
 
