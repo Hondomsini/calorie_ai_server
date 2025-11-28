@@ -19,10 +19,11 @@ if (!process.env.GEMINI_API_KEY) {
 
 console.log("✅ GEMINI_API_KEY detectada correctamente.");
 
-// 100% compatible con SDK 0.24.1
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+// Modelo correcto para la versión 0.24.1
 const model = genAI.getGenerativeModel({
-  model: "gemini-pro-vision" // ← ESTE ES EL MODELO CORRECTO PARA TU SDK
+  model: "gemini-pro-vision",
 });
 
 // -------------------------
@@ -62,14 +63,15 @@ app.post("/analyze", upload.single("file"), async (req, res) => {
 
     const output = result.response.text();
 
-    fs.unlinkSync(req.file.path); // borrar archivo temporal
+    fs.unlinkSync(req.file.path);
 
     return res.json(JSON.parse(output));
+
   } catch (err) {
     console.error("SERVER ERROR:", err);
     return res.status(500).json({
       error: "Error processing image",
-      details: err.message
+      details: err.message,
     });
   }
 });
