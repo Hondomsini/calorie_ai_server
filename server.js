@@ -21,9 +21,9 @@ console.log("✅ GEMINI_API_KEY detectada correctamente.");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Modelo correcto para la versión 0.24.1
+// Modelo correcto para API v1
 const model = genAI.getGenerativeModel({
-  model: "gemini-pro-vision",
+  model: "gemini-1.5-flash",
 });
 
 // -------------------------
@@ -36,7 +36,7 @@ app.post("/analyze", upload.single("file"), async (req, res) => {
     const imageBytes = fs.readFileSync(req.file.path);
 
     const prompt = `
-      Analiza la comida de la imagen y devuelve SOLO JSON con el formato EXACTO:
+      Analiza la comida de la imagen y devuelve SOLO JSON con este formato:
 
       {
         "name": "texto",
@@ -51,20 +51,26 @@ app.post("/analyze", upload.single("file"), async (req, res) => {
       No escribas nada más.
     `;
 
-    const result = await model.generateContent([
-      {
-        inlineData: {
-          mimeType: "image/jpeg",
-          data: imageBytes.toString("base64"),
+    const result = await model.generateContent({
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              inlineData: {
+                mimeType: "image/jpeg",
+                data: imageBytes.toString("base64"),
+              },
+            },
+            { text: prompt },
+          ],
         },
-      },
-      { text: prompt },
-    ]);
-
-    const output = result.response.text();
+      ],
+    });
 
     fs.unlinkSync(req.file.path);
 
+    const output = result.response.text();
     return res.json(JSON.parse(output));
 
   } catch (err) {
