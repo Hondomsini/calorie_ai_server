@@ -1,13 +1,13 @@
 {
   "name": "calorie_ai_server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend for Calorie AI",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Carlos",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
