@@ -21,9 +21,9 @@ console.log("✅ GEMINI_API_KEY detectada correctamente.");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Modelo correcto para API v1
+// Modelo correcto para SDK 0.21.0 (API v1beta)
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
+  model: "gemini-pro-vision",
 });
 
 // -------------------------
@@ -51,27 +51,20 @@ app.post("/analyze", upload.single("file"), async (req, res) => {
       No escribas nada más.
     `;
 
-    const result = await model.generateContent({
-      contents: [
-        {
-          role: "user",
-          parts: [
-            {
-              inlineData: {
-                mimeType: "image/jpeg",
-                data: imageBytes.toString("base64"),
-              },
-            },
-            { text: prompt },
-          ],
+    const result = await model.generateContent([
+      {
+        inlineData: {
+          mimeType: "image/jpeg",
+          data: imageBytes.toString("base64"),
         },
-      ],
-    });
+      },
+      { text: prompt },
+    ]);
 
+    const text = result.response.text();
     fs.unlinkSync(req.file.path);
 
-    const output = result.response.text();
-    return res.json(JSON.parse(output));
+    return res.json(JSON.parse(text));
 
   } catch (err) {
     console.error("SERVER ERROR:", err);
