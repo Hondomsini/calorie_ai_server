@@ -22,7 +22,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 // CORRECCIÓN 1: Usamos el modelo actual 'gemini-1.5-flash'
 // CORRECCIÓN 2: Configuramos 'responseMimeType' para asegurar JSON siempre
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
+  model: "gemini-2.5-flash",
   generationConfig: {
     responseMimeType: "application/json",
     // Opcional: Definir el esquema ayuda a la IA a ser precisa
